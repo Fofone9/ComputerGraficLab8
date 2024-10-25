@@ -11,17 +11,21 @@ float getFPS() {
 
 void simulation()
 {
+	static double PrevTime = lastChech.QuadPart;
 	int fps = getFPS();
 	QueryPerformanceCounter(&currentTime);
-	if (currentTime.QuadPart - lastChech.QuadPart > frequency.QuadPart) {
+	double deltaTime = (currentTime.QuadPart - PrevTime) / frequency.QuadPart;
+	if (currentTime.QuadPart- lastChech.QuadPart>=frequency.QuadPart) {
 		
 		glutSetWindowTitle(to_string(fps).c_str());
 		QueryPerformanceCounter(&lastChech);
 	}
-	
-	// устанавливаем признак того, что окно нуждается в перерисовке
-	keyboard();
-	// эта же функция будет вызвана еще раз через 20 мс
+	PrevTime = currentTime.QuadPart;
+	cameraSimulation(deltaTime);
+	gameObjectsSimulation(deltaTime);
+
+	movePlayer();
+
 	glutPostRedisplay();
 
 };
@@ -66,3 +70,87 @@ void keyboard()
 	}
 
 };
+
+void movePlayer()
+{
+	static struct { int key, x1, y1, x2, y2; MoveDirection dir; }
+	Moves[4]
+	{
+		{0x41,9,10,8,10,MoveDirection::LEFT},
+		{0x44,11,10,12,10,MoveDirection::RIGHT},
+		{0x57,10,9,10,8,MoveDirection::UP},
+		{0x53,10,11,10,12,MoveDirection::DOWN}
+	};
+	ivec2 playerPos = player->getPosition();
+	for (auto move : Moves)
+	{
+		if ((GetAsyncKeyState(move.key) & 0x01) && !player->isMoving() && passabilityMap[playerPos.x + move.x1][playerPos.y + move.y1] <= 1)
+			//cout << "1" << endl;
+			if (passabilityMap[playerPos.x + move.x1][playerPos.y + move.y1] == 1 && passabilityMap[playerPos.x + move.x2][playerPos.y + move.y2] == 0)
+			{
+				mapObjects[playerPos.x + move.x1][playerPos.y + move.y1]->move(move.dir);
+				player->move(move.dir, 90.0f);
+				swap(passabilityMap[playerPos.x + move.x1][playerPos.y + move.y1], passabilityMap[playerPos.x + move.x2][playerPos.y + move.y2]);
+				swap(mapObjects[playerPos.x + move.x1][playerPos.y + move.y1], mapObjects[playerPos.x + move.x2][playerPos.y + move.y2]);
+				cout << player->getPosition().x << player->getPosition().y << endl;
+			}
+			else if (passabilityMap[playerPos.x + move.x1][playerPos.y + move.y1] == 0)
+			{
+				player->move(move.dir, 90.0f);
+				cout << player->getPosition().x << player->getPosition().y << endl;
+			}
+	}
+}
+void cameraSimulation(float deltaTime)
+{
+	static float rotateSpeed = 180.0;
+	static float leanSpeed = 1.f;
+	int keyLeft = GetAsyncKeyState(VK_LEFT);
+	int keyRight = GetAsyncKeyState(VK_RIGHT);
+	int keyUp = GetAsyncKeyState(VK_UP);
+	int keyDown = GetAsyncKeyState(VK_DOWN);
+	int keyPlus = GetAsyncKeyState(VK_ADD);
+	int keySub = GetAsyncKeyState(VK_SUBTRACT);
+	// для провекри класса камеры вызываем методы передвижения
+	if (keyUp & 0x01)
+	{
+		camera.rotateUpDown(-rotateSpeed * deltaTime);
+		std::cout << camera.getPosition().x << camera.getPosition().y << camera.getPosition().z << endl;
+		return;
+	}
+	if (keyDown & 0x01)
+	{
+		camera.rotateUpDown(rotateSpeed * deltaTime);
+		return;
+	}
+	if (keyRight & 0x01)
+	{
+		camera.rotateLeftRight(-rotateSpeed * deltaTime);
+		return;
+	}
+	if (keyLeft & 0x01)
+	{
+		camera.rotateLeftRight(rotateSpeed * deltaTime);
+		return;
+	}
+	if (keyPlus & 0x01)
+	{
+		camera.zoomInOut(-40 * deltaTime);
+		return;
+	}
+	if (keySub & 0x01)
+	{
+		camera.zoomInOut(40 * deltaTime);
+		return;
+	}
+
+	return;
+}
+void gameObjectsSimulation(float deltaTime)
+{
+	player->simulate(deltaTime);
+	for (auto& i : mapObjects)
+		for (auto& j : i)
+			if (j != nullptr)j->simulate(deltaTime);
+
+}

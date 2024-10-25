@@ -1,4 +1,5 @@
 #pragma once
+#include "GL/glew.h"
 #include "Mesh.h"
 #include "PhongMaterial.h"
 #include <memory>

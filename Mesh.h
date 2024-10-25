@@ -1,5 +1,4 @@
 #pragma once
-#include "glew.h"
 #include <windows.h>
 #include <iostream>
 #include <fstream>
@@ -9,11 +8,12 @@
 #include <string>
 #include <memory>
 #include <algorithm>
+
+#include "GL/glew.h"
 #include <GL/GL.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include "GL/freeglut.h"
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>

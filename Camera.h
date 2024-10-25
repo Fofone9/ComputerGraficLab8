@@ -1,4 +1,5 @@
 #pragma once
+#include "GL/glew.h"
 #include "GL/freeglut.h"
 #include <cmath>
 #include <GL/gl.h>

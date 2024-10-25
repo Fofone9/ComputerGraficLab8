@@ -2,6 +2,8 @@
 
 Mesh::Mesh() {
 	indexCount = 0;
+	bufferIds[0] = 0;
+	bufferIds[1] = 0;
 	glGenBuffers(2, bufferIds);
 }
 void Mesh::load(string filename) {
@@ -75,12 +77,10 @@ void Mesh::load(string filename) {
 	}
 	indexCount = indices.size();
 	glBindBuffer(GL_ARRAY_BUFFER, bufferIds[0]);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
-		vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferIds[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
-		indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),indices.data(), GL_STATIC_DRAW);
 
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
