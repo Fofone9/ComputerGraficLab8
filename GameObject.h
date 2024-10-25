@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include <windows.h>
-enum  MoveDirection { STOP, LEFT, RIGHT, UP, DOWN };
+enum class  MoveDirection { STOP, LEFT, RIGHT, UP, DOWN };
 class GameObject
 {
 public:

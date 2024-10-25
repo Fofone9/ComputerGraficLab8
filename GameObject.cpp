@@ -1,7 +1,10 @@
 #include "GameObject.h"
 
 GameObject::GameObject() {
-	position = ivec2(0);
+	this->sost = MoveDirection::STOP;
+	this->speed = 3.0f;
+	this->progress = 0.0f;
+	this->setPosition({ 0,0 });
 }
 
 void GameObject::setGraphicObject(const GraphicObject& graphicObject) {

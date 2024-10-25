@@ -11,7 +11,7 @@ float getFPS() {
 
 void simulation()
 {
-	static double PrevTime = lastChech.QuadPart;
+	static double PrevTime = StartCounter.QuadPart;
 	int fps = getFPS();
 	QueryPerformanceCounter(&currentTime);
 	double deltaTime = (currentTime.QuadPart - PrevTime) / frequency.QuadPart;
@@ -29,47 +29,6 @@ void simulation()
 	glutPostRedisplay();
 
 };
-void keyboard()
-{
-	int keyLeft = GetAsyncKeyState(VK_LEFT);
-	int keyRight = GetAsyncKeyState(VK_RIGHT);
-	int keyUp = GetAsyncKeyState(VK_UP);
-	int keyDown = GetAsyncKeyState(VK_DOWN);
-	int keyPlus = GetAsyncKeyState(VK_ADD);
-	int keySub = GetAsyncKeyState(VK_SUBTRACT);
-	// для провекри класса камеры вызываем методы передвижения
-	if (keyUp & 0x01)
-	{
-		camera.rotateUpDown(5.0);
-		return;
-	}
-	if (keyDown & 0x01)
-	{
-		camera.rotateUpDown(-5.0);
-		return;
-	}
-	if (keyRight & 0x01)
-	{
-		camera.rotateLeftRight(-5.0);
-		return;
-	}
-	if (keyLeft & 0x01)
-	{
-		camera.rotateLeftRight(5.0);
-		return;
-	}
-	if (keyPlus & 0x01)
-	{
-		camera.zoomInOut(0.2);
-		return;
-	}
-	if (keySub & 0x01)
-	{
-		camera.zoomInOut(-0.2);
-		return;
-	}
-
-};
 
 void movePlayer()
 {
@@ -84,21 +43,21 @@ void movePlayer()
 	ivec2 playerPos = player->getPosition();
 	for (auto move : Moves)
 	{
-		if ((GetAsyncKeyState(move.key) & 0x01) && !player->isMoving() && passabilityMap[playerPos.x + move.x1][playerPos.y + move.y1] <= 1)
-			//cout << "1" << endl;
+		if (static_cast<bool>(GetAsyncKeyState(move.key)) && !player->isMoving() && passabilityMap[playerPos.x + move.x1][playerPos.y + move.y1] <= 1)
+		{
+			cout << "1" << endl;
 			if (passabilityMap[playerPos.x + move.x1][playerPos.y + move.y1] == 1 && passabilityMap[playerPos.x + move.x2][playerPos.y + move.y2] == 0)
 			{
 				mapObjects[playerPos.x + move.x1][playerPos.y + move.y1]->move(move.dir);
-				player->move(move.dir, 90.0f);
+				player->move(move.dir);
 				swap(passabilityMap[playerPos.x + move.x1][playerPos.y + move.y1], passabilityMap[playerPos.x + move.x2][playerPos.y + move.y2]);
 				swap(mapObjects[playerPos.x + move.x1][playerPos.y + move.y1], mapObjects[playerPos.x + move.x2][playerPos.y + move.y2]);
-				cout << player->getPosition().x << player->getPosition().y << endl;
 			}
 			else if (passabilityMap[playerPos.x + move.x1][playerPos.y + move.y1] == 0)
 			{
-				player->move(move.dir, 90.0f);
-				cout << player->getPosition().x << player->getPosition().y << endl;
+				player->move(move.dir);
 			}
+		}
 	}
 }
 void cameraSimulation(float deltaTime)
@@ -114,13 +73,12 @@ void cameraSimulation(float deltaTime)
 	// для провекри класса камеры вызываем методы передвижения
 	if (keyUp & 0x01)
 	{
-		camera.rotateUpDown(-rotateSpeed * deltaTime);
-		std::cout << camera.getPosition().x << camera.getPosition().y << camera.getPosition().z << endl;
+		camera.rotateUpDown(rotateSpeed * deltaTime);
 		return;
 	}
 	if (keyDown & 0x01)
 	{
-		camera.rotateUpDown(rotateSpeed * deltaTime);
+		camera.rotateUpDown(-rotateSpeed * deltaTime);
 		return;
 	}
 	if (keyRight & 0x01)

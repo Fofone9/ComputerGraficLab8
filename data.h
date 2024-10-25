@@ -25,7 +25,7 @@ extern vector<GraphicObject> graphicObjects;
 extern vector<shared_ptr<PhongMaterial>> materials;
 
 extern Camera camera;
-extern LARGE_INTEGER ticks, ticksPerSecond, lastChech, currentTime, frequency;
+extern LARGE_INTEGER ticks, ticksPerSecond, lastChech, currentTime, frequency, StartCounter;
 extern Light light;
 extern vector<shared_ptr<Mesh>> meshes;
 extern int passabilityMap[21][21];
